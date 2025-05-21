@@ -13,6 +13,11 @@ def missing_report(df):
     null_average = null_average[null_average > 5]  # Filter > 5%
 
     print("Columns with more than 5% missing values:\n", null_average)
+    columns_of_interest = ['GHI', 'DNI', 'DHI', 'ModA', 'ModB', 'WS', 'WSgust']
+
+# Percentage of missing values per column
+    missing_percent = df[columns_of_interest].isnull().mean() * 100
+    print(missing_percent[missing_percent > 0])
 
     return missing_count
 def plot_correlation(df):
@@ -98,4 +103,27 @@ def data_analysis(df):
  print(df[['GHI', 'DNI', 'DHI', 'Tamb']].describe())
 
 
+def main_cleaning_pipeline(irr_cols , df):
+    print("1. Reporting missing data:")
+    missing_report(df)
+    
+    print("\n2. Flagging outliers:")
+    df = flag_outlier(df)
+    
+    print("\n3. Checking incorrect entries:")
+    incorrect_entries(df)
+    
+    print("\n4. Imputing missing values:")
+ 
+    df = impute_missing(irr_cols, df)
+    
+    return df
+import os
+
+def export_data(df, filename):
+    try:
+        df.to_csv(filename, index=False)
+        print(f"Cleaned data successfully saved to {os.path.abspath(filename)}")
+    except Exception as e:
+        print("Failed to save cleaned data:", e)
 
